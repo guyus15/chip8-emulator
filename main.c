@@ -9,7 +9,7 @@
 
 #define SCREEN_WIDTH 64 * 8
 #define SCREEN_HEIGHT 32 * 8
-#define REFRESH_RATE 200000
+#define REFRESH_RATE 700
 
 unsigned char font[] =
 {
