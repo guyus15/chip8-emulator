@@ -92,7 +92,7 @@ void load_rom_failure_test()
 	// Check that the standard output gives the correct response
 	const char *invalid_rom_string = "Invalid ROM path: 'invalid-rom.ch8'\n\0";
 	
-	assert(strcmp(output_buffer, invalid_rom_string) == 0);
+	assert(strcmp((const char *)output_buffer, invalid_rom_string) == 0);
 }
 
 // Test 4
