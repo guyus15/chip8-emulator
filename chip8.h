@@ -8,7 +8,7 @@
 #define V_SIZE 16
 
 unsigned char font[80];
-char pixel_coords[64][32];
+unsigned char pixel_coords[64][32];
 
 typedef struct 
 {
