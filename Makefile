@@ -6,7 +6,7 @@ OBJ_NAME = main
 
 # This is the target that compiles our executable
 main : $(OBJS)
-	gcc $(OBJS) -o $(OBJ_NAME) -lSDL2 -g
+	gcc $(OBJS) -o $(OBJ_NAME) -lSDL2 -g -Wall -Werror -Wpedantic
 
 # --- Testing ---
 
@@ -18,4 +18,4 @@ TEST_OBJ_NAME = chip8_test
 
 # This is the target that compiles our test executable
 test: $(TEST_OBJS)
-	gcc $(TEST_OBJS) -o $(TEST_OBJ_NAME) -lSDL2 -g
+	gcc $(TEST_OBJS) -o $(TEST_OBJ_NAME) -lSDL2 -g -Wall -Werror -Wpedantic
