@@ -5,7 +5,9 @@ A program written in C to emulate the CHIP-8 interpreter.
 ## Installation
 
 This emulator uses SDL 2 to render graphics to the screen, so you must ensure that this is present on your machine
-before compiling.
+before compiling. On Ubuntu systems, you can do this with the follow:
+
+`sudo apt-get install libsdl2-dev`
 
 After cloning the repository, you can compile the emulator using `make` from within the repository's directory.
 
