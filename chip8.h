@@ -7,7 +7,6 @@
 #define STACK_SIZE 16
 #define V_SIZE 16
 
-unsigned char font[80];
 unsigned char pixel_coords[64][32];
 
 typedef struct 
