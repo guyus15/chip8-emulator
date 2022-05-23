@@ -11,9 +11,6 @@
 #define SCREEN_HEIGHT 32 * 8
 #define REFRESH_RATE 700
 
-CHP chip8;
-SDLapp app;
-
 int main(int argc, char *argv[])
 {
 	if (argc == 1)

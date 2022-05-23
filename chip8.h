@@ -7,8 +7,8 @@
 #define STACK_SIZE 16
 #define V_SIZE 16
 
-unsigned char pixel_coords[64][32];
-unsigned char font[80];
+extern unsigned char pixel_coords[64][32];
+extern unsigned char font[80];
 
 typedef struct 
 {
@@ -34,6 +34,9 @@ typedef struct
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 } SDLapp;
+
+extern CHP chip8;
+extern SDLapp app;
 
 void initialise_chip8(CHP *chip8);
 
