@@ -7,13 +7,13 @@
 CHP chip8;
 
 // To be run before each test
-void before_each()
+static void before_each()
 {
 	initialise_chip8(&chip8);
 }
 
 // Test 1
-void initialise_chip8_test()
+static void initialise_chip8_test()
 {
 	// This test ensures that the initialise_chip8() function works correctly
 	// by correctly initialising the required values
@@ -33,7 +33,7 @@ void initialise_chip8_test()
 }
 
 // Test 2
-void load_rom_success_test()
+static void load_rom_success_test()
 {
 	// This test ensures that the load_rom() function works correctly
 	// by successfully loading a chosen ROM into CHIP-8 memory, assuming
@@ -62,7 +62,7 @@ void load_rom_success_test()
 }
 
 // Test 3
-void load_rom_failure_test()
+static void load_rom_failure_test()
 {
 	// This test ensures that the load_rom() function fails when it receives an
 	// invalid ROM.
@@ -96,7 +96,7 @@ void load_rom_failure_test()
 }
 
 // Test 4
-void fetch_test()
+static void fetch_test()
 {
 	// This test ensures that the fetch() function returns the correct opcode
 	// at the given program counter address.
@@ -112,7 +112,7 @@ void fetch_test()
 }
 
 // Test 5
-void decode_00EE_test()
+static void decode_00EE_test()
 {
 	// This test ensures that when given the opcode 0x00EE, the decode() function
 	// returns from a subroutine.
@@ -135,7 +135,7 @@ void decode_00EE_test()
 }
 
 // Test 6
-void decode_1NNN_test()
+static void decode_1NNN_test()
 {
 	// This test ensures that when given the opcode 1NNN, the decode() function
 	// jumps the program counter to another memory address.
@@ -160,7 +160,7 @@ void decode_1NNN_test()
 }
 
 // Test 7
-void decode_2NNN_test()
+static void decode_2NNN_test()
 {
 	// This test ensures that when given the opcode 2NNN, the decode() function
 	// will call a subroutine at the memory location NNN.
@@ -183,7 +183,7 @@ void decode_2NNN_test()
 }	
 
 // Test 8
-void decode_3XNN_skip_test()
+static void decode_3XNN_skip_test()
 {
 	// This test ensures that when given the opcode 3XNN, the decode() function
 	// will skip one instruction if the value in VX is equal to NN.
@@ -206,7 +206,7 @@ void decode_3XNN_skip_test()
 }
 
 // Test 9
-void decode_3XNN_no_skip_test()
+static void decode_3XNN_no_skip_test()
 {
 	// This test ensures that when given the opcode 3XNN, the decode() function
 	// will not skip an instruction if the value in VX is not equal to NN.
@@ -229,7 +229,7 @@ void decode_3XNN_no_skip_test()
 }
 
 // Test 10
-void decode_4XNN_skip_test()
+static void decode_4XNN_skip_test()
 {
 	// This test ensures that when given the opcode 4XNN, the decode() function
 	// will skip an instruction if the value in VX is not equal to NN.
@@ -252,7 +252,7 @@ void decode_4XNN_skip_test()
 }
 
 // Test 11
-void decode_4XNN_no_skip_test()
+static void decode_4XNN_no_skip_test()
 {
 	// This test ensures that when given the opcode 4XNN, the decode() function
 	// will not skip an instruction if the value in VX is equal to NN.
@@ -275,7 +275,7 @@ void decode_4XNN_no_skip_test()
 }
 
 // Test 12
-void decode_5XY0_skip_test()
+static void decode_5XY0_skip_test()
 {
 	// This test ensures that when given the opcode 5XY0, the decode() function
 	// will skip an instruction if the values in VX and VY are equal.
@@ -299,7 +299,7 @@ void decode_5XY0_skip_test()
 }
 
 // Test 13
-void decode_5XY0_no_skip_test()
+static void decode_5XY0_no_skip_test()
 {
 	// This test ensures that when given the opcode 5XY0, the decode() function
 	// will not skip an instruction if the values in VX and VY are not equal.
@@ -323,7 +323,7 @@ void decode_5XY0_no_skip_test()
 }
 
 // Test 14
-void decode_9XY0_skip_test()
+static void decode_9XY0_skip_test()
 {
 	// This test ensures that when given the opcode 9XY0, the decode() function
 	// will skip an instruction if the values in VX and VY are not equal.
@@ -347,7 +347,7 @@ void decode_9XY0_skip_test()
 }
 
 // Test 15
-void decode_9XY0_no_skip_test()
+static void decode_9XY0_no_skip_test()
 {
 	// This test ensures that when given the opcode 9XY0, the decode() function
 	// will skip an instruction if the values in VX and VY are not equal.
@@ -371,7 +371,7 @@ void decode_9XY0_no_skip_test()
 }
 
 // Test 16
-void decode_6XNN_test()
+static void decode_6XNN_test()
 {
 	// This test ensures that when given the opcode 6XNN, the decode() function
 	// sets the register VX to NN.
@@ -390,7 +390,7 @@ void decode_6XNN_test()
 }
 
 // Test 17
-void decode_7XNN_test()
+static void decode_7XNN_test()
 {
 	// This test ensures that when given the opcode 7XNN, the decode() function
 	// adds the value NN to the register VX.
@@ -409,7 +409,7 @@ void decode_7XNN_test()
 }	
 
 // Test 18
-void decode_8XY0_test()
+static void decode_8XY0_test()
 {
 	// This test ensures that when given the opcode 8XY0, the decode() function
 	// sets VX to VY.
@@ -432,7 +432,7 @@ void decode_8XY0_test()
 }
 
 // Test 19
-void decode_8XY1_test()
+static void decode_8XY1_test()
 {
 	// This test ensures that when given the opcode 8XY1, the decode() function
 	// sets VX to the binary OR of VX and VY.
@@ -456,7 +456,7 @@ void decode_8XY1_test()
 }
 
 // Test 20
-void decode_8XY2_test()
+static void decode_8XY2_test()
 {
 	// This test ensures that when given the opcode 8XY2, the decode() function
 	// sets VX to the binary AND of VX and VY.
@@ -480,7 +480,7 @@ void decode_8XY2_test()
 }
 
 // Test 21
-void decode_8XY3_test()
+static void decode_8XY3_test()
 {
 	// This test ensures that when given the opcode 8XY3, the decode() function
 	// sets VX to the binary XOR of VX and VY.
@@ -504,7 +504,7 @@ void decode_8XY3_test()
 }
 
 // Test 22
-void decode_8XY4_no_overflow_test()
+static void decode_8XY4_no_overflow_test()
 {
 	// This test ensures that when given the opcode 8XY4, the decode() function
 	// sets VX to the value of VX plus the value of VY.
@@ -531,7 +531,7 @@ void decode_8XY4_no_overflow_test()
 
 
 // Test 23
-void decode_8XY4_overflow_test()
+static void decode_8XY4_overflow_test()
 {
 	// This test ensures that when given the opcode 8XY4, the decode() function
 	// sets VX to the value of VX plus the value of VY.
@@ -557,7 +557,7 @@ void decode_8XY4_overflow_test()
 }
 
 // Test 24
-void decode_8XY5_no_underflow_test()
+static void decode_8XY5_no_underflow_test()
 {
 	// This test ensures that when given the opcode 8XY5, the decode() function
 	// sets VX to the value of VX minus the value of VY,
@@ -583,7 +583,7 @@ void decode_8XY5_no_underflow_test()
 }
 
 // Test 25
-void decode_8XY5_underflow_test()
+static void decode_8XY5_underflow_test()
 {
 	// This test ensures that when given the opcode 8XY5, the decode() function
 	// sets VX to the value of VX minus the value of VY,
@@ -609,7 +609,7 @@ void decode_8XY5_underflow_test()
 }
 
 // Test 26
-void decode_8XY6_shift_out_test()
+static void decode_8XY6_shift_out_test()
 {
     // This test ensures that when given the opcode 8XY6, the decode() function
     // sets VX to the value of VY shifted 1 bit to the right.
@@ -635,7 +635,7 @@ void decode_8XY6_shift_out_test()
 }
 
 // Test 27
-void decode_8XY6_no_shift_out_test()
+static void decode_8XY6_no_shift_out_test()
 {
     // This test ensures that when given the opcode 8XY6, the decode() function
     // sets VX to the value of VY shifted 1 bit to the right.
@@ -661,7 +661,7 @@ void decode_8XY6_no_shift_out_test()
 }
 
 // Test 30
-void decode_8XY7_no_underflow_test()
+static void decode_8XY7_no_underflow_test()
 {
     // This test ensures that when given the opcode 8XY7, the decode() function
     // sets VX to the value of VY minus the value of VX,
@@ -687,7 +687,7 @@ void decode_8XY7_no_underflow_test()
 }
 
 // Test 31
-void decode_8XY7_underflow_test()
+static void decode_8XY7_underflow_test()
 {
 	// This test ensures that when given the opcode 8XY7, the decode() function
 	// sets VX to the value of VX minus the value of VY,
@@ -713,7 +713,7 @@ void decode_8XY7_underflow_test()
 }
 
 // Test 28
-void decode_8XYE_shift_out_test()
+static void decode_8XYE_shift_out_test()
 {
     // This test ensures that when given the opcode 8XYE, the decode() function
     // sets VX to the value of VY shifted 1 bit to the left.
@@ -739,7 +739,7 @@ void decode_8XYE_shift_out_test()
 }
 
 // Test 29
-void decode_8XYE_no_shift_out_test()
+static void decode_8XYE_no_shift_out_test()
 {
     // This test ensures that when given the opcode 8XYE, the decode() function
     // sets VX to the value of VY shifted 1 bit to the left.
@@ -765,7 +765,7 @@ void decode_8XYE_no_shift_out_test()
 }
 
 // Test 32
-void decode_ANNN_test()
+static void decode_ANNN_test()
 {
     // This test ensures that when given the opcdoe ANNN, the decode() function
     // sets CHIP-8's index (I) to the value NNN.
@@ -781,7 +781,7 @@ void decode_ANNN_test()
 }
 
 // Test 33
-void decode_BNNN_test()
+static void decode_BNNN_test()
 {
     // This test ensures that when given the opcode BNNN, the decode() function
     // successfully jumps to the location NNN with the offset of the value in
@@ -804,7 +804,7 @@ void decode_BNNN_test()
 }
 
 // Test 33
-void decode_CXNN_test()
+static void decode_CXNN_test()
 {
 
     // This test ensures that when given the opcode CXNN, the decode() function
@@ -827,7 +827,7 @@ void decode_CXNN_test()
 }
 
 // Test 34
-void decode_DXYN_no_on_test()
+static void decode_DXYN_no_on_test()
 {
     // This test ensures that when given the opcode DXYN, the decode() function
     // will draw an N pixels tall sprite from the memory location that the I 
@@ -887,7 +887,7 @@ void decode_DXYN_no_on_test()
 }
 
 // Test 35
-void decode_DXYN_on_test()
+static void decode_DXYN_on_test()
 {
     // This test ensures that when given the opcode DXYN, the decode() function
     // will draw an N pixels tall sprite from the memory location that the I 
@@ -947,7 +947,7 @@ void decode_DXYN_on_test()
 }
 
 // Test 36
-void decode_FX07_test()
+static void decode_FX07_test()
 {
     // This test ensures that when given the opcode FX07, the decode() function
     // sets VX to the current value of the delay timer.
@@ -969,7 +969,7 @@ void decode_FX07_test()
 }
 
 // Test 37
-void decode_FX15_test()
+static void decode_FX15_test()
 {
     // This test ensures that when given the opcode FX15, the decode() function
     // sets the delay timer to the value in VX
@@ -991,7 +991,7 @@ void decode_FX15_test()
 }
 
 // Test 38
-void decode_FX18_test()
+static void decode_FX18_test()
 {
     // This test ensures that when given the opcode FX18, the decode() function
     // sets the sound timer to the value in VX
@@ -1013,7 +1013,7 @@ void decode_FX18_test()
 }
 
 // Test 39
-void decode_FX1E_test()
+static void decode_FX1E_test()
 {
     // This test ensures the when given the opcode FX1E, the value of VX is
     // added to the index (I)
@@ -1035,7 +1035,7 @@ void decode_FX1E_test()
 }
 
 // Test 40
-void decode_FX33_test()
+static void decode_FX33_test()
 {
     // This test ensures that when given the opcode FX33, the binary-coded
     // decimal version of V[x] will be put into the index (I)
@@ -1059,7 +1059,7 @@ void decode_FX33_test()
 }
 
 // Test 41
-void decode_FX55_test()
+static void decode_FX55_test()
 {
     // This test ensures that when given the opcode FX55, stores memory from 
     // the V registers into the index (I).
@@ -1085,7 +1085,7 @@ void decode_FX55_test()
 }
 
 // Test 42
-void decode_FX65_test()
+static void decode_FX65_test()
 {
     // This test ensures that when given the opcode FX65, loads memory from 
     // the memory at index (i) into the V registers.
