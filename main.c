@@ -13,74 +13,74 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc == 1)
-	{
-		printf("Usage: %s <rom-path>\n", argv[0]);
-		return -1;
-	}
+    if (argc == 1)
+    {
+        printf("Usage: %s <rom-path>\n", argv[0]);
+        return -1;
+    }
 
-	initialise_chip8(&chip8);
-	load_rom(argv[1], &chip8);
+    initialise_chip8(&chip8);
+    load_rom(argv[1], &chip8);
 
-	// Seed random values
-	srand(time(NULL));
+    // Seed random values
+    srand(time(NULL));
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-	{
-		printf("There has been an error initialising SDL.\n%s\n", SDL_GetError());
-		return -1;
-	}
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    {
+        printf("There has been an error initialising SDL.\n%s\n", SDL_GetError());
+        return -1;
+    }
 	
-	app.window = SDL_CreateWindow(
-			"CHIP-8",
-			SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED,
-			SCREEN_WIDTH,
-			SCREEN_HEIGHT,
-			0
-	);
+    app.window = SDL_CreateWindow(
+            "CHIP-8",
+            SDL_WINDOWPOS_UNDEFINED,
+            SDL_WINDOWPOS_UNDEFINED,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            0
+    );
 
-	if (!app.window)
-	{
-		printf("There has been an error creating the window.\n%s\n", SDL_GetError());
-		return -1;
-	}
+    if (!app.window)
+    {
+        printf("There has been an error creating the window.\n%s\n", SDL_GetError());
+        return -1;
+    }
 
-	app.renderer = SDL_CreateRenderer(app.window, -1, SDL_RENDERER_SOFTWARE);
+    app.renderer = SDL_CreateRenderer(app.window, -1, SDL_RENDERER_SOFTWARE);
 
-	if (!app.renderer)
-	{
-		printf("There has been an error creating the renderer.\n%s\n", SDL_GetError());
-		return -1;
-	}
+    if (!app.renderer)
+    {
+        printf("There has been an error creating the renderer.\n%s\n", SDL_GetError());
+        return -1;
+    }
 
-	// Set initial render draw color
-	SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
+    // Set initial render draw color
+    SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
 
-	SDL_Event e;
+    SDL_Event e;
 
-	int quit = 0;
-	while (!quit)
-	{
-		while (SDL_PollEvent(&e) != 0)
-		{
-			if (e.type == SDL_QUIT)
-			{
-				quit = 1;
-			}
-		}
+    int quit = 0;
+    while (!quit)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_QUIT)
+            {
+                quit = 1;
+            }
+        }
             
-		update(&chip8);
+        update(&chip8);
 
-		SDL_RenderPresent(app.renderer);
+        SDL_RenderPresent(app.renderer);
 
-		// Enforce FPS
-		SDL_Delay(1000/REFRESH_RATE);
-	}
+        // Enforce FPS
+        SDL_Delay(1000/REFRESH_RATE);
+    }
 
-	SDL_DestroyWindow(app.window);
-	SDL_Quit();
+    SDL_DestroyWindow(app.window);
+    SDL_Quit();
 
-	return 0;
+    return 0;
 }
 
