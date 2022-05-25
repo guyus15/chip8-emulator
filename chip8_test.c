@@ -9,603 +9,603 @@ CHP chip8;
 // To be run before each test
 static void before_each()
 {
-	initialise_chip8(&chip8);
+    initialise_chip8(&chip8);
 }
 
 // Test 1
 static void initialise_chip8_test()
 {
-	// This test ensures that the initialise_chip8() function works correctly
-	// by correctly initialising the required values
+    // This test ensures that the initialise_chip8() function works correctly
+    // by correctly initialising the required values
 	
-	before_each();
+    before_each();
 
-	assert(chip8.PC == 0x200);
-	assert(chip8.SP == 0x000);
-	assert(chip8.DT == 0x000);
-	assert(chip8.ST == 0x000);
+    assert(chip8.PC == 0x200);
+    assert(chip8.SP == 0x000);
+    assert(chip8.DT == 0x000);
+    assert(chip8.ST == 0x000);
 
-	// Check font has been copied into memory
-	for (int i = 0; i < sizeof(font); i++)
-	{
-		assert(chip8.memory[i] == font[i]);
-	}
+    // Check font has been copied into memory
+    for (int i = 0; i < sizeof(font); i++)
+    {
+        assert(chip8.memory[i] == font[i]);
+    }
 }
 
 // Test 2
 static void load_rom_success_test()
 {
-	// This test ensures that the load_rom() function works correctly
-	// by successfully loading a chosen ROM into CHIP-8 memory, assuming
-	// that there are no errors with opening the ROM file.
+    // This test ensures that the load_rom() function works correctly
+    // by successfully loading a chosen ROM into CHIP-8 memory, assuming
+    // that there are no errors with opening the ROM file.
 	
-	before_each();
+    before_each();
 
-	const char* test_rom_path = "roms/test-rom.ch8";
+    const char* test_rom_path = "roms/test-rom.ch8";
 	
-	// Load ROM call
-	load_rom(test_rom_path, &chip8);
+    // Load ROM call
+    load_rom(test_rom_path, &chip8);
 
-	// Check that the ROM has been loaded into CHIP-8's memory 
+    // Check that the ROM has been loaded into CHIP-8's memory 
 	
-	unsigned char test_buffer[4096]; // Create a test buffer with the size of CHIP-8 memory
-	memset(test_buffer, 0, sizeof(test_buffer));
+    unsigned char test_buffer[4096]; // Create a test buffer with the size of CHIP-8 memory
+    memset(test_buffer, 0, sizeof(test_buffer));
 
-	FILE *fptr = fopen(test_rom_path, "rb");
-	fread(test_buffer, sizeof(char), sizeof(chip8.memory) - 0x200, fptr);
-	fclose(fptr);
+    FILE *fptr = fopen(test_rom_path, "rb");
+    fread(test_buffer, sizeof(char), sizeof(chip8.memory) - 0x200, fptr);
+    fclose(fptr);
 	
-	for (int i = 0; i < 4096 - 0x200; i++)
-	{
-		assert(test_buffer[i] == chip8.memory[0x200 + i]);
-	}
+    for (int i = 0; i < 4096 - 0x200; i++)
+    {
+        assert(test_buffer[i] == chip8.memory[0x200 + i]);
+    }
 }
 
 // Test 3
 static void load_rom_failure_test()
 {
-	// This test ensures that the load_rom() function fails when it receives an
-	// invalid ROM.
+    // This test ensures that the load_rom() function fails when it receives an
+    // invalid ROM.
 	
-	before_each();
+    before_each();
 
-	const char* invalid_rom_path = "invalid-rom.ch8";
+    const char* invalid_rom_path = "invalid-rom.ch8";
 
-	// Here we are making a reference to the original standard output so
-	// we can refer to it later when standard output becomes redirected
-	FILE *original = stdout;
-	stdout = fopen("/tmp/stdoutput.txt", "w+");
+    // Here we are making a reference to the original standard output so
+    // we can refer to it later when standard output becomes redirected
+    FILE *original = stdout;
+    stdout = fopen("/tmp/stdoutput.txt", "w+");
 
-	// Load ROM call
-	load_rom(invalid_rom_path, &chip8);
+    // Load ROM call
+    load_rom(invalid_rom_path, &chip8);
 
-	unsigned char output_buffer[100];
+    unsigned char output_buffer[100];
 
-	fseek(stdout, 0L, SEEK_END);
-	long int size = ftell(stdout);
-	fseek(stdout, 0L, SEEK_SET);
+    fseek(stdout, 0L, SEEK_END);
+    long int size = ftell(stdout);
+    fseek(stdout, 0L, SEEK_SET);
 
-	fread(output_buffer, size, 1, stdout);
+    fread(output_buffer, size, 1, stdout);
 
-	stdout = original;
+    stdout = original;
 
-	// Check that the standard output gives the correct response
-	const char *invalid_rom_string = "Invalid ROM path: 'invalid-rom.ch8'\n\0";
+    // Check that the standard output gives the correct response
+    const char *invalid_rom_string = "Invalid ROM path: 'invalid-rom.ch8'\n\0";
 	
-	assert(strcmp((const char *)output_buffer, invalid_rom_string) == 0);
+    assert(strcmp((const char *)output_buffer, invalid_rom_string) == 0);
 }
 
 // Test 4
 static void fetch_test()
 {
-	// This test ensures that the fetch() function returns the correct opcode
-	// at the given program counter address.
+    // This test ensures that the fetch() function returns the correct opcode
+    // at the given program counter address.
 	
-	before_each();
+    before_each();
 
-	// Load an instruction into CHIP-8 memory starting from the beginning of program space
-	chip8.memory[0x200]	= 0xF0;
-	chip8.memory[0x200 + 1] = 0x15;
+    // Load an instruction into CHIP-8 memory starting from the beginning of program space
+    chip8.memory[0x200]	= 0xF0;
+    chip8.memory[0x200 + 1] = 0x15;
 
-	// Check that the correct opcode is returned.
-	assert(fetch(&chip8) == 0xF015);
+    // Check that the correct opcode is returned.
+    assert(fetch(&chip8) == 0xF015);
 }
 
 // Test 5
 static void decode_00EE_test()
 {
-	// This test ensures that when given the opcode 0x00EE, the decode() function
-	// returns from a subroutine.
+    // This test ensures that when given the opcode 0x00EE, the decode() function
+    // returns from a subroutine.
 	
-	before_each();
+    before_each();
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Set up some fake values for CHIP-8 to test returning from a subroutine.
-	chip8.stack[0] = 0xFFF;
-	chip8.SP = 1;
+    // Set up some fake values for CHIP-8 to test returning from a subroutine.
+    chip8.stack[0] = 0xFFF;
+    chip8.SP = 1;
 
-	// Call decode() with the opcode 0x00EE
-	decode(0x00EE, &chip8);
+    // Call decode() with the opcode 0x00EE
+    decode(0x00EE, &chip8);
 
-	// Check that values have been set correctly
-	assert(chip8.SP == 0);
-	assert(chip8.PC == 0xFFF);
+    // Check that values have been set correctly
+    assert(chip8.SP == 0);
+    assert(chip8.PC == 0xFFF);
 }
 
 // Test 6
 static void decode_1NNN_test()
 {
-	// This test ensures that when given the opcode 1NNN, the decode() function
-	// jumps the program counter to another memory address.
+    // This test ensures that when given the opcode 1NNN, the decode() function
+    // jumps the program counter to another memory address.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test jumping to another memory address.
-	chip8.PC = 0x200;
-	chip8.memory[0x500] = 0x20;
-	chip8.memory[0x500 + 1] = 0x30;
+    // Set up some fake values for CHIP-8 to test jumping to another memory address.
+    chip8.PC = 0x200;
+    chip8.memory[0x500] = 0x20;
+    chip8.memory[0x500 + 1] = 0x30;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x1NNN, where N is the new memory location.
-	decode(0x1500, &chip8);
+    // Call decode() with the opcode 0x1NNN, where N is the new memory location.
+    decode(0x1500, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500); // Account for cancelling PC increment
-	assert(chip8.memory[chip8.PC] == 0x20);
-	assert(chip8.memory[chip8.PC + 1] == 0x30);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500); // Account for cancelling PC increment
+    assert(chip8.memory[chip8.PC] == 0x20);
+    assert(chip8.memory[chip8.PC + 1] == 0x30);
 }
 
 // Test 7
 static void decode_2NNN_test()
 {
-	// This test ensures that when given the opcode 2NNN, the decode() function
-	// will call a subroutine at the memory location NNN.
+    // This test ensures that when given the opcode 2NNN, the decode() function
+    // will call a subroutine at the memory location NNN.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test calling a subroutine
-	chip8.PC = 0x200; 
+    // Set up some fake values for CHIP-8 to test calling a subroutine
+    chip8.PC = 0x200; 
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x2NNN, where N is location of the subroutine.
-	decode(0x2500, &chip8);
+    // Call decode() with the opcode 0x2NNN, where N is location of the subroutine.
+    decode(0x2500, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.stack[0] == 0x200 + 2);
-	assert(chip8.SP == 1);
-	assert(chip8.PC == 0x500);
+    // Check that the values have been set correctly
+    assert(chip8.stack[0] == 0x200 + 2);
+    assert(chip8.SP == 1);
+    assert(chip8.PC == 0x500);
 }	
 
 // Test 8
 static void decode_3XNN_skip_test()
 {
-	// This test ensures that when given the opcode 3XNN, the decode() function
-	// will skip one instruction if the value in VX is equal to NN.
-	
-	before_each();
+    // This test ensures that when given the opcode 3XNN, the decode() function
+    // will skip one instruction if the value in VX is equal to NN.
 
-	// Set up some fake values for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
-	
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    before_each();
 
-	// Call decode() with the opcode 0x3XNN, where X is the index of V and N is 
-	// is the value to compare.
-	decode(0x3545, &chip8);
+    // Set up some fake values for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 4);	
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
+
+    // Call decode() with the opcode 0x3XNN, where X is the index of V and N is 
+    // is the value to compare.
+    decode(0x3545, &chip8);
+
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 4);	
 }
 
 // Test 9
 static void decode_3XNN_no_skip_test()
 {
-	// This test ensures that when given the opcode 3XNN, the decode() function
-	// will not skip an instruction if the value in VX is not equal to NN.
+    // This test ensures that when given the opcode 3XNN, the decode() function
+    // will not skip an instruction if the value in VX is not equal to NN.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake value for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
+    // Set up some fake value for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x3XNN, where X is the index of V and N is
-	// the value to compare.
-	decode(0x3535, &chip8);
+    // Call decode() with the opcode 0x3XNN, where X is the index of V and N is
+    // the value to compare.
+    decode(0x3535, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 2);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 2);
 }
 
 // Test 10
 static void decode_4XNN_skip_test()
 {
-	// This test ensures that when given the opcode 4XNN, the decode() function
-	// will skip an instruction if the value in VX is not equal to NN.
+    // This test ensures that when given the opcode 4XNN, the decode() function
+    // will skip an instruction if the value in VX is not equal to NN.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake value for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
+    // Set up some fake value for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x4XNN, where X is the index of V and N is
-	// the value to compare.
-	decode(0x4535, &chip8);
+    // Call decode() with the opcode 0x4XNN, where X is the index of V and N is
+    // the value to compare.
+    decode(0x4535, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 4);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 4);
 }
 
 // Test 11
 static void decode_4XNN_no_skip_test()
 {
-	// This test ensures that when given the opcode 4XNN, the decode() function
-	// will not skip an instruction if the value in VX is equal to NN.
+    // This test ensures that when given the opcode 4XNN, the decode() function
+    // will not skip an instruction if the value in VX is equal to NN.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
+    // Set up some fake values for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
 	
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x4XNN, where X is the index of V and N is 
-	// is the value to compare.
-	decode(0x4545, &chip8);
+    // Call decode() with the opcode 0x4XNN, where X is the index of V and N is 
+    // is the value to compare.
+    decode(0x4545, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 2);	
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 2);	
 }
 
 // Test 12
 static void decode_5XY0_skip_test()
 {
-	// This test ensures that when given the opcode 5XY0, the decode() function
-	// will skip an instruction if the values in VX and VY are equal.
+    // This test ensures that when given the opcode 5XY0, the decode() function
+    // will skip an instruction if the values in VX and VY are equal.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
-	chip8.V[6] = 0x45;
+    // Set up some fake values for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
+    chip8.V[6] = 0x45;
 	
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x5XY0, where X is the index of VX and Y
-	// is the index of VY.
-	decode(0x5560, &chip8);
+    // Call decode() with the opcode 0x5XY0, where X is the index of VX and Y
+    // is the index of VY.
+    decode(0x5560, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 4);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 4);
 }
 
 // Test 13
 static void decode_5XY0_no_skip_test()
 {
-	// This test ensures that when given the opcode 5XY0, the decode() function
-	// will not skip an instruction if the values in VX and VY are not equal.
+    // This test ensures that when given the opcode 5XY0, the decode() function
+    // will not skip an instruction if the values in VX and VY are not equal.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
-	chip8.V[6] = 0x40;
+    // Set up some fake values for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
+    chip8.V[6] = 0x40;
 	
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 	 
-	// Call decode() with the opcode 0x5XY0, where X is the index of VX and Y
-	// is the index of VY.
-	decode(0x5560, &chip8);
+    // Call decode() with the opcode 0x5XY0, where X is the index of VX and Y
+    // is the index of VY.
+    decode(0x5560, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 2);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 2);
 }
 
 // Test 14
 static void decode_9XY0_skip_test()
 {
-	// This test ensures that when given the opcode 9XY0, the decode() function
-	// will skip an instruction if the values in VX and VY are not equal.
+    // This test ensures that when given the opcode 9XY0, the decode() function
+    // will skip an instruction if the values in VX and VY are not equal.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
-	chip8.V[6] = 0x45;
+    // Set up some fake values for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
+    chip8.V[6] = 0x45;
 	
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x9XY0, where X is the index of VX and Y
-	// is the index of VY.
-	decode(0x9560, &chip8);
+    // Call decode() with the opcode 0x9XY0, where X is the index of VX and Y
+    // is the index of VY.
+    decode(0x9560, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 2);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 2);
 }
 
 // Test 15
 static void decode_9XY0_no_skip_test()
 {
-	// This test ensures that when given the opcode 9XY0, the decode() function
-	// will skip an instruction if the values in VX and VY are not equal.
+    // This test ensures that when given the opcode 9XY0, the decode() function
+    // will skip an instruction if the values in VX and VY are not equal.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values for CHIP-8 to test skipping
-	chip8.PC = 0x500;
-	chip8.V[5] = 0x45;
-	chip8.V[6] = 0x40;
+    // Set up some fake values for CHIP-8 to test skipping
+    chip8.PC = 0x500;
+    chip8.V[5] = 0x45;
+    chip8.V[6] = 0x40;
 	
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x9XY0, where X is the index of VX and Y
-	// is the index of VY.
-	decode(0x9560, &chip8);
+    // Call decode() with the opcode 0x9XY0, where X is the index of VX and Y
+    // is the index of VY.
+    decode(0x9560, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.PC == 0x500 + 4);
+    // Check that the values have been set correctly
+    assert(chip8.PC == 0x500 + 4);
 }
 
 // Test 16
 static void decode_6XNN_test()
 {
-	// This test ensures that when given the opcode 6XNN, the decode() function
-	// sets the register VX to NN.
+    // This test ensures that when given the opcode 6XNN, the decode() function
+    // sets the register VX to NN.
 	
-	before_each();
+    before_each();
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x6XNN, where X is the index for V and NN
-	// is the value to set VX to
-	decode(0x6530, &chip8);
+    // Call decode() with the opcode 0x6XNN, where X is the index for V and NN
+    // is the value to set VX to
+    decode(0x6530, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.V[5] == 0x30);
+    // Check that the values have been set correctly
+    assert(chip8.V[5] == 0x30);
 }
 
 // Test 17
 static void decode_7XNN_test()
 {
-	// This test ensures that when given the opcode 7XNN, the decode() function
-	// adds the value NN to the register VX.
+    // This test ensures that when given the opcode 7XNN, the decode() function
+    // adds the value NN to the register VX.
 	
-	before_each();
+    before_each();
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x7XNN, where X is the index for V and NN
-	// is the value to add to VX.
-	decode(0x7550, &chip8);
+    // Call decode() with the opcode 0x7XNN, where X is the index for V and NN
+    // is the value to add to VX.
+    decode(0x7550, &chip8);
 
-	// Check that the values have been set correctly
-	assert(chip8.V[5] == 0x50);
+    // Check that the values have been set correctly
+    assert(chip8.V[5] == 0x50);
 }	
 
 // Test 18
 static void decode_8XY0_test()
 {
-	// This test ensures that when given the opcode 8XY0, the decode() function
-	// sets VX to VY.
+    // This test ensures that when given the opcode 8XY0, the decode() function
+    // sets VX to VY.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values to test setting VX to VY
-	chip8.V[0] = 0x10;
-	chip8.V[5] = 0xFF;
+    // Set up some fake values to test setting VX to VY
+    chip8.V[0] = 0x10;
+    chip8.V[5] = 0xFF;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x8XY0, where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8050, &chip8);
+    // Call decode() with the opcode 0x8XY0, where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8050, &chip8);
 
-	// Check the values have been set correctly
-	assert(chip8.V[0] == 0xFF);
+    // Check the values have been set correctly
+    assert(chip8.V[0] == 0xFF);
 }
 
 // Test 19
 static void decode_8XY1_test()
 {
-	// This test ensures that when given the opcode 8XY1, the decode() function
-	// sets VX to the binary OR of VX and VY.
-	
-	before_each();
+    // This test ensures that when given the opcode 8XY1, the decode() function
+    // sets VX to the binary OR of VX and VY.
 
-	// Set up some fake values to test setting VX to the binary OR of 
-	// VX and VY
-	chip8.V[0] = 0x6C;
-	chip8.V[5] = 0xE1;
+    before_each();
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Set up some fake values to test setting VX to the binary OR of 
+    // VX and VY
+    chip8.V[0] = 0x6C;
+    chip8.V[5] = 0xE1;
 
-	// Call decode() with the opcode 0x8XY1, where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8051, &chip8);
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Check the values have been set correctly
-	assert(chip8.V[0] == 0xED);
+    // Call decode() with the opcode 0x8XY1, where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8051, &chip8);
+
+    // Check the values have been set correctly
+    assert(chip8.V[0] == 0xED);
 }
 
 // Test 20
 static void decode_8XY2_test()
 {
-	// This test ensures that when given the opcode 8XY2, the decode() function
-	// sets VX to the binary AND of VX and VY.
+    // This test ensures that when given the opcode 8XY2, the decode() function
+    // sets VX to the binary AND of VX and VY.
 	
-	before_each();
+    before_each();
 
-	// Set up some fake values to test setting VX to the binary AND of 
-	// VX and VY
-	chip8.V[0] = 0x0F;
-	chip8.V[5] = 0xF0;
+    // Set up some fake values to test setting VX to the binary AND of 
+    // VX and VY
+    chip8.V[0] = 0x0F;
+    chip8.V[5] = 0xF0;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x8XY2, where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8052, &chip8);
+    // Call decode() with the opcode 0x8XY2, where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8052, &chip8);
 
-	// Check the values have been set correctly
-	assert(chip8.V[0] == 0x00);
+    // Check the values have been set correctly
+    assert(chip8.V[0] == 0x00);
 }
 
 // Test 21
 static void decode_8XY3_test()
 {
-	// This test ensures that when given the opcode 8XY3, the decode() function
-	// sets VX to the binary XOR of VX and VY.
+    // This test ensures that when given the opcode 8XY3, the decode() function
+    // sets VX to the binary XOR of VX and VY.
 	
-	before_each();
+    before_each();
 
-	// Set up and some fake values to test setting VX to the binary XOR of
-	// VX and VY
-	chip8.V[0] = 0x6C;
-	chip8.V[5] = 0xE1;
+    // Set up and some fake values to test setting VX to the binary XOR of
+    // VX and VY
+    chip8.V[0] = 0x6C;
+    chip8.V[5] = 0xE1;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x8XY3, where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8053, &chip8);
+    // Call decode() with the opcode 0x8XY3, where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8053, &chip8);
 	
-	// Check the values have been set correctly
-	assert(chip8.V[0] == 0x8D);
+    // Check the values have been set correctly
+    assert(chip8.V[0] == 0x8D);
 }
 
 // Test 22
 static void decode_8XY4_no_overflow_test()
 {
-	// This test ensures that when given the opcode 8XY4, the decode() function
-	// sets VX to the value of VX plus the value of VY.
-	// This addition will affect the carry flag (VF).
-	// This test should not overflow, so the carry flag should be zero.
+    // This test ensures that when given the opcode 8XY4, the decode() function
+    // sets VX to the value of VX plus the value of VY.
+    // This addition will affect the carry flag (VF).
+    // This test should not overflow, so the carry flag should be zero.
 	
-	before_each();
+    before_each();
 
-	// Set up and some fake values to test
-	chip8.V[0] = 0x01;
-	chip8.V[5] = 0x10;
+    // Set up and some fake values to test
+    chip8.V[0] = 0x01;
+    chip8.V[5] = 0x10;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x8XY4 where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8054, &chip8);
+    // Call decode() with the opcode 0x8XY4 where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8054, &chip8);
 
-	// Check the values have been set correctly
-	assert(chip8.V[0] == 0x11);
-	assert(chip8.V[0xf] == 0);
+    // Check the values have been set correctly
+    assert(chip8.V[0] == 0x11);
+    assert(chip8.V[0xf] == 0);
 }
 
 
 // Test 23
 static void decode_8XY4_overflow_test()
 {
-	// This test ensures that when given the opcode 8XY4, the decode() function
-	// sets VX to the value of VX plus the value of VY.
-	// This addition will affect the carry flag (VF).
-	// This test should overflow, so the carry flag should be one.
+    // This test ensures that when given the opcode 8XY4, the decode() function
+    // sets VX to the value of VX plus the value of VY.
+    // This addition will affect the carry flag (VF).
+    // This test should overflow, so the carry flag should be one.
 	
-	before_each();
+    before_each();
 
-	// Set up and some fake values to test
-	chip8.V[0] = 0xFF;
-	chip8.V[5] = 0xFF;
+    // Set up and some fake values to test
+    chip8.V[0] = 0xFF;
+    chip8.V[5] = 0xFF;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call decode() with the opcode 0x8XY4 where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8054, &chip8);
+    // Call decode() with the opcode 0x8XY4 where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8054, &chip8);
 
-	// Check the values have been set correctly
-	assert(chip8.V[0] == 0xFE);
-	assert(chip8.V[0xF] == 1);
+    // Check the values have been set correctly
+    assert(chip8.V[0] == 0xFE);
+    assert(chip8.V[0xF] == 1);
 }
 
 // Test 24
 static void decode_8XY5_no_underflow_test()
 {
-	// This test ensures that when given the opcode 8XY5, the decode() function
-	// sets VX to the value of VX minus the value of VY,
-	// This subtraction will affect the carry flag (VF).
-	// This test should not underflow, so the carry flag should be one.
+    // This test ensures that when given the opcode 8XY5, the decode() function
+    // sets VX to the value of VX minus the value of VY,
+    // This subtraction will affect the carry flag (VF).
+    // This test should not underflow, so the carry flag should be one.
 	
-	before_each();
+    before_each();
 
-	// Set up and some fake values to test
-	chip8.V[0] = 0xFF;
-	chip8.V[5] = 0x0F;
+    // Set up and some fake values to test
+    chip8.V[0] = 0xFF;
+    chip8.V[5] = 0x0F;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call the decode() with the opcode 0x8XY5 where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8055, &chip8);
+    // Call the decode() with the opcode 0x8XY5 where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8055, &chip8);
 
-	// Check values have been set correctly
-	assert(chip8.V[0] == 0xF0);
-	assert(chip8.V[0xF] == 1);
+    // Check values have been set correctly
+    assert(chip8.V[0] == 0xF0);
+    assert(chip8.V[0xF] == 1);
 }
 
 // Test 25
 static void decode_8XY5_underflow_test()
 {
-	// This test ensures that when given the opcode 8XY5, the decode() function
-	// sets VX to the value of VX minus the value of VY,
-	// This subtraction will affect the carry flag (VF).
-	// This test should underflow, so the carry flag should be zero.
+    // This test ensures that when given the opcode 8XY5, the decode() function
+    // sets VX to the value of VX minus the value of VY,
+    // This subtraction will affect the carry flag (VF).
+    // This test should underflow, so the carry flag should be zero.
 	
-	before_each();
+    before_each();
 
-	// Set up and some fake values to test
-	chip8.V[0] = 0x0F;
-	chip8.V[5] = 0x2F;
+    // Set up and some fake values to test
+    chip8.V[0] = 0x0F;
+    chip8.V[5] = 0x2F;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call the decode() with the opcode 0x8XY5 where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8055, &chip8);
-	
-	// Check values have been set correctly
-	assert(chip8.V[0] == 0xE0);
-	assert(chip8.V[0xF] == 0);
+    // Call the decode() with the opcode 0x8XY5 where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8055, &chip8);
+
+    // Check values have been set correctly
+    assert(chip8.V[0] == 0xE0);
+    assert(chip8.V[0xF] == 0);
 }
 
 // Test 26
@@ -689,27 +689,27 @@ static void decode_8XY7_no_underflow_test()
 // Test 31
 static void decode_8XY7_underflow_test()
 {
-	// This test ensures that when given the opcode 8XY7, the decode() function
-	// sets VX to the value of VX minus the value of VY,
-	// This subtraction will affect the carry flag (VF).
-	// This test should underflow, so the carry flag should be one.
+    // This test ensures that when given the opcode 8XY7, the decode() function
+    // sets VX to the value of VX minus the value of VY,
+    // This subtraction will affect the carry flag (VF).
+    // This test should underflow, so the carry flag should be one.
 	
-	before_each();
+    before_each();
 
-	// Set up and some fake values to test
-	chip8.V[0] = 0x2F;
-	chip8.V[5] = 0x0F;
+    // Set up and some fake values to test
+    chip8.V[0] = 0x2F;
+    chip8.V[5] = 0x0F;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call the decode() with the opcode 0x8XY7 where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x8057, &chip8);
+    // Call the decode() with the opcode 0x8XY7 where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x8057, &chip8);
 	
-	// Check values have been set correctly
-	assert(chip8.V[0] == 0xE0);
-	assert(chip8.V[0xF] == 0);
+    // Check values have been set correctly
+    assert(chip8.V[0] == 0xE0);
+    assert(chip8.V[0xF] == 0);
 }
 
 // Test 28
@@ -722,16 +722,16 @@ static void decode_8XYE_shift_out_test()
     
     before_each();
 
-	// Set up and some fake values to test
-	chip8.V[0] = 0x00;
-	chip8.V[5] = 0xF0;
+    // Set up and some fake values to test
+    chip8.V[0] = 0x00;
+    chip8.V[5] = 0xF0;
 
-	// Increment the program counter to simulate the update function
-	chip8.PC += 2;
+    // Increment the program counter to simulate the update function
+    chip8.PC += 2;
 
-	// Call the decode() with the opcode 0x8XYE where X is the index for VX and Y is
-	// the index for VY.
-	decode(0x805E, &chip8);
+    // Call the decode() with the opcode 0x8XYE where X is the index for VX and Y is
+    // the index for VY.
+    decode(0x805E, &chip8);
     
     // Check the values have been set correctly
     assert(chip8.V[0] == 0xE0);
