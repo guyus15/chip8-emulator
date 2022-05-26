@@ -12,27 +12,27 @@ extern unsigned char font[80];
 
 typedef struct 
 {
-	// Program counter and stack pointer
-	unsigned short PC;
-	unsigned short SP;
+    // Program counter and stack pointer
+    unsigned short PC;
+    unsigned short SP;
 
-	unsigned short stack[STACK_SIZE];
-	unsigned char memory[MEMORY_SIZE];
+    unsigned short stack[STACK_SIZE];
+    unsigned char memory[MEMORY_SIZE];
 
-	// General purpose registers
-	unsigned char V[V_SIZE];
-	// Delay timer and sound timer
-	unsigned char DT;
-	unsigned char ST;
+    // General purpose registers
+    unsigned char V[V_SIZE];
+    // Delay timer and sound timer
+    unsigned char DT;
+    unsigned char ST;
 
-	// Index register
-	unsigned short I;
+    // Index register
+    unsigned short I;
 } CHP;
 
 typedef struct
 {
-	SDL_Window *window;
-	SDL_Renderer *renderer;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 } SDLapp;
 
 extern CHP chip8;
