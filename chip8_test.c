@@ -1112,11 +1112,11 @@ static void decode_FX65_test()
 
 int main()
 {
-	// Run each test
-	initialise_chip8_test();
-	load_rom_success_test();
-	load_rom_failure_test();
-	fetch_test();
+    // Run each test
+    initialise_chip8_test();
+    load_rom_success_test();
+    load_rom_failure_test();
+    fetch_test();
     decode_00EE_test();
     decode_1NNN_test();
     decode_2NNN_test();
