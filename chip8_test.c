@@ -1157,7 +1157,7 @@ int main()
     decode_FX55_test();
     decode_FX65_test();
 
-	printf("All tests passed.\n");
+    printf("All tests passed.\n");
 
-	return 0;
+    return 0;
 }
